@@ -1,0 +1,505 @@
+<html lang="cn">
+<head>
+<meta http-equiv="content-type" content="text/html" ; charset="UTF-8">
+
+</head>
+<body onLoad="on_load()">
+
+<script type="text/javascript" src="jquery.min.1.9.1.js"></script>
+<script language=javascript>
+
+/**
+ * generator idNo accord it's pre 17 bits numbers
+ */
+function generator_idNo(idNo){
+		//check date
+		var dateStr = idNo.substr(6, 8);
+		var yearStr = dateStr.substr(0, 4);
+		var monthStr = dateStr.substr(4, 2);
+		var dayStr = dateStr.substr(6);
+
+		var weightNums = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+
+		var complimentMapping = new Array(
+			new Array(0, "1")
+		  , new Array(1, "0")
+		  , new Array(2, "X")
+		  , new Array(3, "9")
+		  , new Array(4, "8")
+		  , new Array(5, "7")
+		  , new Array(6, "6")
+		  , new Array(7, "5")
+		  , new Array(8, "4")
+		  , new Array(9, "3")
+		  , new Array(10, "2")
+		);
+
+		var sum = 0;
+
+		for(var i = 0; i < 17; i++){
+		   var tempValue = parseInt(idNo.substr(i, 1), 10);
+		   sum += (tempValue * weightNums[i]);
+		}
+
+		var compliment = (sum % 11);
+		var mappingValue = complimentMapping[compliment][1];
+
+		return idNo + mappingValue;
+}
+
+/**
+ * is valid date or not
+ */
+function isDate(day, month, year){
+	month = month - 1;
+	var testDate = new Date();
+	testDate.setFullYear(year);
+	testDate.setMonth(month);
+	testDate.setDate(day);
+	if ((testDate.getFullYear() == year) && (month == testDate.getMonth()) && (day == testDate.getDate())){
+		return true;
+	}else{
+		return false
+	}
+}
+
+
+/**
+ *check data valid or not
+ */
+function send_idNo(){
+	// 校验身份证规则
+
+	var areaCode = document.form1.areaCode.value;
+	var birthday = document.form1.birthday.value;
+	var random = document.form1.random.value;
+
+             //check areaNo
+	if(areaCode.replace(/\s/g, "").length < 6){
+		document.form1.areaCode.focus();
+		alert("地区号码长度不正确!");
+		return;
+	}else{
+	    areaCode = areaCode.replace(/\s/g, "");
+		var rgexp1 = /^\d{6}$/g;
+		if(!rgexp1.test(areaCode)){
+		     document.form1.areaCode.focus();
+		     alert("地区号码应该为数字!");
+		     return;
+		}
+	}
+
+	//check birthday
+	if(birthday.replace(/\s/g, "").length < 8){
+		document.form1.birthday.focus();
+		alert("出生日期长度不正确!");
+		return;
+	}else{
+	    birthday = birthday.replace(/\s/g, "");
+	    var rgexp2 = /^\d{8}$/g;
+	    if(!rgexp2.test(birthday)){
+			document.form1.birthday.focus();
+			alert("出生日期应该为数字!");
+			return;
+		}else{
+			var yearStr = birthday.substr(0, 4);
+			var monthStr = birthday.substr(4, 2);
+			var dayStr = birthday.substr(6);
+			if(!isDate(parseInt(dayStr, 10), parseInt(monthStr, 10), parseInt(yearStr, 10))){
+				document.form1.birthday.focus();
+				alert("出生日期不是合法日期!");
+				return;
+			}
+		}
+	}
+
+	//check randomNo
+	if(random.replace(/\s/g, "").length < 3){
+		document.form1.random.focus();
+		alert("随机号码长度不正确!");
+		return;
+	}else{
+		random = random.replace(/\s/g, "");
+		var rgexp3 = /^\d{3}$/g;
+	    if(!rgexp3.test(random)){
+			document.form1.random.focus();
+			alert("随机号码应该为数字!");
+			return;
+		}
+	}
+
+
+
+	var preIdNo = areaCode + birthday + random;
+             var afterIdNo = generator_idNo(preIdNo);
+
+             document.form1.idNo.value = afterIdNo;
+
+	//set gener
+	if(parseInt(random, 10)%2==0){
+	   document.form1.gener.value = "女";
+	}else{
+	   document.form1.gener.value = "男";
+	}
+}
+
+
+/**
+ *check input is number or not
+ */
+   function check_num(){
+	var keyCode = window.event.keyCode;
+	if(keyCode < 48 || keyCode > 57){
+	   return false;
+	}
+}
+
+function Convert(amtStr) {
+       var a, renum = '';
+       var j = 0;
+       var a1 = '', a2 = '', a3 = '';
+       var tes = /^-/;
+       a = amtStr.replace(/,/g, "");
+       a = a.replace(/[^-\.,0-9]/g, ""); //删除无效字符
+       a = a.replace(/(^\s*)|(\s*$)/g, ""); //trim
+       if (tes.test(a)) a1 = '-';
+       else a1 = '';
+       a = a.replace(/-/g, "");
+       if (a != "0" && a.substr(0, 2) != "0.") a = a.replace(/^0*/g, "");
+       j = a.indexOf('.'); if (j < 0) j = a.length; a2 = a.substr(0, j); a3 = a.substr(j); j = 0;
+       for (i = a2.length; i > 3; i = i - 3) {
+           renum = "," + a2.substr(i - 3, 3) + renum;
+           j++;
+       }
+       renum = a1 + a2.substr(0, a2.length - j * 3) + renum + a3;
+ 
+       return renum;
+   }
+/******转换金额*****/
+   function ConvertMoney() {
+       $("[money]").each(function () {
+           var str = $(this).val();
+					 /*
+           $(this).keyup(function (evt) {
+               str = $(this).val();
+               evt = (evt) ? evt : ((window.event) ? window.event : "") //兼容IE和Firefox获得keyBoardEvent对象
+               var key = evt.keyCode ? evt.keyCode : evt.which; //兼容IE和Firefox获得keyBoardEvent对象的键值
+               if (key >= 33 && key <= 40) {
+                   evt.preventDefault();
+                   evt.returnValue = false;
+                   return false;
+               }
+               $(this).val(Convert(str));
+           });
+					 */
+					 $(this).blur(function() {
+					 	$(this).val(Convert($(this).val()));
+					 })
+ 
+					 
+           if (str != "") {
+               $(this).val(Convert(str));
+           }
+					 
+       });
+   }
+
+
+/**
+ * on load init some variables
+ */
+function on_load(){
+    //init areaNo
+    var random2 = Math.floor(Math.random()*1000000);
+	var randomStr2 = "222222" + random2;
+	var postRandom2 = randomStr2.substr(randomStr2.length - 6);
+	document.form1.areaCode.value = postRandom2;
+	
+	
+	//init birthday
+	var currdate = new Date();
+	currdate.setFullYear(currdate.getFullYear() - 18);
+	var randomDate = Math.floor(Math.random()*10000);
+	currdate.setDate(currdate.getDate() - randomDate);
+	            
+	var initBirthday = currdate.getFullYear() + "" + ((currdate.getMonth() + 1) < 10 ? "0" 
+				+ (currdate.getMonth() + 1) : (currdate.getMonth() + 1)) + "" 
+				+ (currdate.getDate() < 10 ? "0" + currdate.getDate() : currdate.getDate());
+				
+	document.form1.birthday.value = initBirthday;
+	
+	//init randomNo
+	var random = Math.floor(Math.random()*1000);
+	var randomStr = "000" + random;
+	var postRandom = randomStr.substr(randomStr.length - 3);
+	document.form1.random.value = postRandom;
+	
+	var areaCode = document.form1.areaCode.value;
+	var birthday = document.form1.birthday.value;
+	var random = document.form1.random.value;
+	
+	var preIdNo = areaCode + birthday + random;
+	
+	var afterIdNo = generator_idNo(preIdNo);//
+	
+	document.form1.idNo.value = afterIdNo;
+	
+	if(parseInt(random, 10)%2==0){
+	     document.form1.gener.value = "女";
+	}else{
+	     document.form1.gener.value = "男";
+	}
+	mkCpId();
+	var random = Math.floor(Math.random()*100000000000000000);
+	while(random.length<16){
+		random = Math.floor(Math.random()*100000000000000000);
+	}
+	document.form1.acct.value=random;
+	genBancsnew();
+	ConvertMoney();
+}
+
+function mkCpId(){//
+   //init areaNo
+    var aaa =  Math.floor(Math.random()*1000000000)+"";
+	while(aaa.length != 9){
+		aaa = Math.floor(Math.random()*1000000000)+"";
+	}
+	document.form1.Code.value = aaa;
+
+	var ttt = Math.floor(Math.random()*10000000000000000)+"";
+	while(ttt.length != 16){
+		ttt = Math.floor(Math.random()*10000000000000000)+"";
+	}
+	document.form1.LoanCard.value = ttt;
+
+
+
+  	var s=Math.floor(Math.random()*100)+"";
+	while(s.length != 2){
+		s = Math.floor(Math.random()*100)+"";
+	}
+	mtdCal(document.form1.Code);
+	mtdCal2();
+	document.form1.LoanCardResult1.value=document.form1.LoanCardResult1.value+s;
+}
+
+
+function mtdCal(Code)
+{
+	var strErrMsg = "Code Format is Wrong!!";
+	var strInput = Code.value;
+
+	if (strInput.length != 9 && strInput.length != 8)
+	{
+		alert("请输入最少8个数字");
+		return;
+	}
+
+	var intI;
+	var intTotal = 0;
+	var intWeight = new Array(3, 7, 9, 10, 5, 8, 4, 2);
+	for (var intJ = 0; intJ <= 7; intJ++)
+	{
+		intI = strInput.toUpperCase().charCodeAt(intJ);
+		if (intI >= 48 && intI <= 57)
+		{
+			intI = intI - 48;
+		}
+		else if (intI >= 65 && intI <= 90)
+		{
+			intI = intI - 55;
+		}
+
+		intTotal = intTotal + (intI * intWeight[intJ]);
+	}
+
+	var intRemain = intTotal - (parseInt(intTotal / 11, 10) * 11);
+	if (intRemain == 1)
+	{
+		strResult = 'X';
+	}
+	else if (intRemain == 0)
+	{
+		strResult = '0';
+	}
+	else
+	{
+		strResult = 11 - intRemain;
+	}
+
+	document.form1.Result1.value = strInput.substr(0, 8);
+	document.form1.Result2.value = strResult;
+}
+
+function mtdCal2()
+{
+	var strInput = document.form1.LoanCard.value;
+	if (strInput.length != 16)
+	{
+		alert("请输入16个数字");
+		return;
+	}
+
+	var intWeight = new Array(1, 3, 5, 7, 11, 2, 13, 1, 1, 17, 19, 97, 23, 29);
+	var intTotal = 0;
+	var intI;
+	var strTemp;
+
+	for (var intJ = 0; intJ <= 13; intJ++)
+	{
+		intI = strInput.toUpperCase().charCodeAt(intJ);
+
+		if (intI >= 65 && intI <= 90)
+			intI = (intI - 65) + 10;
+		else if (intI >= 48 && intI <= 57)
+			intI = intI - 48;
+		else
+			return false;
+
+		intTotal += intWeight[intJ] * intI;
+	}
+
+	strTemp = 1 + intTotal % 97;
+
+	strResult = strInput.substr(0, 14);
+
+	if (strTemp < 10)
+		strResult = strResult + "0" + strTemp;
+	else
+		strResult = strResult + "" + ((strTemp - (strTemp % 10)) / 10) + (strTemp % 10);
+	document.form1.LoanCardResult1.value = strResult;
+	document.form1.CodeB.value = strResult.substr(0,14);
+	var sui = parseInt(strResult )* 7;
+	//console.log(sui)
+    for(var n=0; n<10; n++) {
+		var buscode = sui.toString().substr(0,14) + n;
+		if(isValidBusCode(buscode) == true) {
+			document.form1.ResultB.value = buscode;
+			return false;
+		}
+	}
+}
+
+function isValidBusCode(busCode) {
+	var ret=false;
+	if(busCode.length==15) {
+		var sum=0;
+		var s=[];
+		var p=[];
+		var a=[];
+		var m=10;
+	    p[0]=m;
+		for(var i=0;i<busCode.length;i++) {
+		   a[i]=parseInt(busCode.substring(i,i+1),m);
+		   s[i]=(p[i]%(m+1))+a[i];
+		   if(0==s[i]%m){
+			   p[i+1]=10*2;
+		   }
+		   else {
+				p[i+1]=(s[i]%m)*2;
+		   }    
+		}                                       
+		if(1==(s[14]%m)){
+			ret=true;
+		}
+		else {
+			ret=false;
+		}
+	}
+	else if(""==busCode){
+	  ret=true;
+	}
+	return ret;
+}
+
+function Copy(target){                       //新建Copy函数
+	target.select();                                  //用select函数将文本内容选择
+	js=target.createTextRange();      //createTextRange()用于获取myimg文本框内容
+	js.execCommand("Copy");           //execCommand("Copy")将js里面的字符串复制到剪切板。
+	document.getElementById("Layer1").innerHTML = "<font  color='red'>"+'"'+target.value+'"'+" 已复制到剪切板!</font>";
+	setTimeout("clearDiv()",1000);
+}
+function clearDiv()
+{
+	document.getElementById("Layer1").innerHTML = "";
+}
+
+function genBancsCd(s){
+  var ai="[['10','9','8','7','6','5','4','3','2'],['5','10','4','9','3','8','2','7','1'],['8','5','2','10','7','4','1','9','6'],[4,'8','1','5','9','2','6','10','3'],['2','4','6','8','10','1','3','5','7'],['1','2','3','4','5','6','7','8','9'],['6','1','7','2','8','3','9','4','10'],['3','6','9','1','4','7','10','2','5'],['7','3','10','6','2','9','5','1','8'],['9','7','5','3','1','10','8','6','4'],['10','9','8','7','6','5','4','3','2'],['5','10','4','9','3','8','2','7',1],['8','5','2','10','7','4','1','9','6'],['4','8','1','5','9','2','6','10','3'],['2','4','6','8','10','1','3','5','7'],['1','2','3','4','5','6','7','8','9']]";
+	var k = 0;
+	var i1 = 0;
+	var ai1 = new Array(17);  
+	s = s + "0";
+	var ac = new Array(17); 
+	for(var sl=0;sl<s.length;sl++){
+		ac[sl] = s.substring(sl,sl+1);
+	}
+	eval("var aiArray="+ai);
+	ai1 = ac;
+	var k = 0;
+	for (var i = 15; i >= 0; i--)
+			if (ai1[i] != 0)
+			{
+				var j = ai1[i] - 1;
+				k = k + aiArray[i][j]*1;
+			}
+	if (k == 0)
+	{
+			ac[16] = 0;
+			return ac.join("");
+	}
+	var l = k % 10;
+	var i1 = l % 10;
+	for (var k1 = 0; k1 < 16; k1++)
+			ac[k1] = ai1[k1].substring(0,1);
+	ac[16] = (i1+ '').substring(0,1);
+  return ac.join("");
+}
+function genBancsnew(){
+  	var acct = document.getElementById("acct").value;
+  	
+  	var acct1 = acct.substring(0,16);
+  	var newacct = genBancsCd(acct1);
+  	document.getElementById("newacct").value = newacct;
+  	
+  }
+</script>
+
+<form name="form1">
+<b>组织机构代码</b>&nbsp;&nbsp; 
+<input type=hidden id=Code size=10 maxlength=9>&nbsp;&nbsp;&nbsp;&nbsp; 
+<input type=text id=Result1 size=10 maxlength=8 readonly onClick="Copy(this)">&nbsp;-&nbsp;
+<input type=text id=Result2 size=2 maxlength=1 readonly>
+<hr>
+
+<b>营业执照</b>&nbsp;&nbsp; 
+<input type=hidden id=CodeB size=20 maxlength=16>&nbsp;&nbsp;&nbsp;&nbsp; 
+<input type=text id=ResultB size=20 maxlength=16 readonly onClick="Copy(this)">
+<hr>
+
+<b>贷款卡</b>&nbsp;&nbsp; 
+<input type=hidden id=LoanCard size=18 maxlength=16 />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type=text id=LoanCardResult1 size=24 maxlength=18  onClick="Copy(this)">
+<hr>
+
+<b>出生日期(8位)</b>&nbsp; 
+<input type="text" name="birthday" size="8" maxlength="8" value="19840102" onKeyPress="return check_num();" onClick="Copy(this)" />&nbsp;[如:19840102]<p>
+<b>性别</b>&nbsp; 
+<input type="text" name="gener" size="1" readonly>
+<input type="hidden" name="areaCode" size="6" maxlength="6" value="223845" onKeyPress="return check_num();" onClick="Copy(this)" />
+<input type="hidden" name="random" size="3" maxlength="3" onKeyPress="return check_num();" /><!--  &nbsp;[奇数为男性, 偶数为女性]--> <p>
+<b>身份证号(18位)</b>&nbsp; 
+<input type="text" name="idNo" size="24" readonly onClick="Copy(this)">
+<hr>
+<b>新核心账号</b><input type="hidden" id="acct"  maxlength="17" > <input type="text" id="newacct" size="34" money="true"  onClick="Copy(this)" ><br>
+<hr>
+<input type="button" style="width:700;height:300" name="generator" value="&nbsp;重&nbsp;新&nbsp;生&nbsp;成&nbsp;" onClick="on_load();">
+<hr>
+<input type="button" style="width:70;height:30" name="generator" value="&nbsp;读&nbsp;取&nbsp;" onClick="alert($('#newacct').val());">
+<input type="button" style="width:70;height:30" name="generator" value="&nbsp;设置&nbsp;" onClick="$('#newacct').val(999999.99);">
+<div id="Layer1" >
+</div>
+</form>
+</body>
+</html>
