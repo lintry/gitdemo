@@ -154,6 +154,7 @@ function send_idNo(){
 	}
 }
 
+/* 转换千分位 */
 function Convert(amtStr) {
        var a, renum = '';
        var j = 0;
@@ -179,23 +180,26 @@ function Convert(amtStr) {
    function ConvertMoney() {
        $("[money]").each(function () {
            var str = $(this).val();
-					 /*
-           $(this).keyup(function (evt) {
-               str = $(this).val();
-               evt = (evt) ? evt : ((window.event) ? window.event : "") //兼容IE和Firefox获得keyBoardEvent对象
-               var key = evt.keyCode ? evt.keyCode : evt.which; //兼容IE和Firefox获得keyBoardEvent对象的键值
-               if (key >= 33 && key <= 40) {
-                   evt.preventDefault();
-                   evt.returnValue = false;
-                   return false;
-               }
-               $(this).val(Convert(str));
-           });
-					 */
+
+					 /* 实时输入转换 */
+					 if ($(this).attr('realinput') != null) {
+	           $(this).keyup(function (evt) {
+	               str = $(this).val();
+	               evt = (evt) ? evt : ((window.event) ? window.event : "") //兼容IE和Firefox获得keyBoardEvent对象
+	               var key = evt.keyCode ? evt.keyCode : evt.which; //兼容IE和Firefox获得keyBoardEvent对象的键值
+	               if (key >= 33 && key <= 40) {
+	                   evt.preventDefault();
+	                   evt.returnValue = false;
+	                   return false;
+	               }
+	               $(this).val(Convert(str));
+	           });
+					 }
+           
+					 
 					 $(this).blur(function() {
 					 	$(this).val(Convert($(this).val()));
 					 })
- 
 					 
            if (str != "") {
                $(this).val(Convert(str));
@@ -480,7 +484,7 @@ function genBancsnew(){
 
 <b>贷款卡</b>&nbsp;&nbsp; 
 <input type=hidden id=LoanCard size=18 maxlength=16 />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type=text id=LoanCardResult1 size=24 maxlength=18  onClick="Copy(this)">
+<input type=text id=LoanCardResult1 size=24 maxlength=18 readonly onClick="Copy(this)">
 <hr>
 
 <b>出生日期(8位)</b>&nbsp; 
@@ -492,12 +496,14 @@ function genBancsnew(){
 <b>身份证号(18位)</b>&nbsp; 
 <input type="text" name="idNo" size="24" readonly onClick="Copy(this)">
 <hr>
-<b>新核心账号</b><input type="hidden" id="acct"  maxlength="17" > <input type="text" id="newacct" size="34" money="true"  onClick="Copy(this)" ><br>
+<b>新核心账号</b><input type="hidden" id="acct"  maxlength="17" > <input type="text" id="newacct" size="34" readonly  onClick="Copy(this)" ><br>
 <hr>
 <input type="button" style="width:700;height:300" name="generator" value="&nbsp;重&nbsp;新&nbsp;生&nbsp;成&nbsp;" onClick="on_load();">
 <hr>
-<input type="button" style="width:70;height:30" name="generator" value="&nbsp;读&nbsp;取&nbsp;" onClick="alert($('#newacct').val());">
-<input type="button" style="width:70;height:30" name="generator" value="&nbsp;设置&nbsp;" onClick="$('#newacct').val(999999.99);">
+<b>家庭资产</b><input type="hidden" id="asset"  maxlength="17" > <input type="text" id="assetamt" size="34" money="true" realinput="1" onClick="Copy(this)" ><br>
+<hr>
+<input type="button" style="width:70;height:30" name="generator" value="&nbsp;读&nbsp;取&nbsp;" onClick="alert($('#assetamt').val());">
+<input type="button" style="width:70;height:30" name="generator" value="&nbsp;设置&nbsp;" onClick="$('#assetamt').val(999999.99);">
 <div id="Layer1" >
 </div>
 </form>
