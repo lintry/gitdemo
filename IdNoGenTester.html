@@ -473,13 +473,13 @@ function genBancsnew(){
 <input type=text id=Result2 size=2 maxlength=1 readonly>
 <hr>
 
-<b>营业执照</b>&nbsp;&nbsp; 
+<b>营业执照<>/b>&nbsp;&nbsp; 
 <input type=hidden id=CodeB size=20 maxlength=16>&nbsp;&nbsp;&nbsp;&nbsp; 
-<input type=text id=ResultB size=20 maxlength=16 readonly onClick="Copy(this)">
+<input type=text id=ResultB size=24 maxlength=16 readonly onClick="Copy(this)">
 <hr>
 
 <b>贷款卡</b>&nbsp;&nbsp; 
-<input type=hidden id=LoanCard size=18 maxlength=16 />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type=hidden id=LoanCard size=24 maxlength=16 />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type=text id=LoanCardResult1 size=24 maxlength=18  onClick="Copy(this)">
 <hr>
 
@@ -490,7 +490,7 @@ function genBancsnew(){
 <input type="hidden" name="areaCode" size="6" maxlength="6" value="223845" onKeyPress="return check_num();" onClick="Copy(this)" />
 <input type="hidden" name="random" size="3" maxlength="3" onKeyPress="return check_num();" /><!--  &nbsp;[奇数为男性, 偶数为女性]--> <p>
 <b>身份证号(18位)</b>&nbsp; 
-<input type="text" name="idNo" size="24" readonly onClick="Copy(this)">
+<input type="text" name="idNo" size="30" readonly onClick="Copy(this)">
 <hr>
 <b>新核心账号</b><input type="hidden" id="acct"  maxlength="17" > <input type="text" id="newacct" size="34" money="true"  onClick="Copy(this)" ><br>
 <hr>
