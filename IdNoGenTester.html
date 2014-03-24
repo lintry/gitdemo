@@ -419,8 +419,8 @@ function isValidBusCode(busCode) {
 
 function Copy(target){                       //新建Copy函数
 	target.select();                                  //用select函数将文本内容选择
-	js=target.createTextRange();      //createTextRange()用于获取myimg文本框内容
-	js.execCommand("Copy");           //execCommand("Copy")将js里面的字符串复制到剪切板。
+	//js=target.createTextRange();      //createTextRange()用于获取myimg文本框内容
+	//js.execCommand("Copy");           //execCommand("Copy")将js里面的字符串复制到剪切板。
 	document.getElementById("Layer1").innerHTML = "<font  color='red'>"+'"'+target.value+'"'+" 已复制到剪切板!</font>";
 	setTimeout("clearDiv()",1000);
 }
@@ -490,9 +490,9 @@ function genBancsnew(){
 <b>出生日期(8位)</b>&nbsp; 
 <input type="text" name="birthday" size="16" maxlength="8" value="19840102" onKeyPress="return check_num();" onClick="Copy(this)" />&nbsp;[如:19840102]<p>
 <b>性别</b>&nbsp; 
-<input type="text" name="gener" size="1" readonly>
+<input type="text" name="gener" size="2" readonly>
 <input type="hidden" name="areaCode" size="6" maxlength="6" value="223845" onKeyPress="return check_num();" onClick="Copy(this)" />
-<input type="hidden" name="random" size="3" maxlength="3" onKeyPress="return check_num();" /><!--  &nbsp;[奇数为男性, 偶数为女性]--> <p>
+<input type="hidden" name="random" size="6" maxlength="3" onKeyPress="return check_num();" /><!--  &nbsp;[奇数为男性, 偶数为女性]--> <p>
 <b>身份证号(18位)</b>&nbsp; 
 <input type="text" name="idNo" size="30" readonly onClick="Copy(this)">
 <hr>
@@ -504,6 +504,9 @@ function genBancsnew(){
 <hr>
 <input type="button" style="width:70;height:30" name="generator" value="&nbsp;读&nbsp;取&nbsp;" onClick="alert($('#assetamt').val());">
 <input type="button" style="width:70;height:30" name="generator" value="&nbsp;设置&nbsp;" onClick="$('#assetamt').val(999999.99);">
+<br>
+<br>
+
 <div id="Layer1" >
 </div>
 </form>
